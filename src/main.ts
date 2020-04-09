@@ -19,8 +19,8 @@ window.onload = () => {
       }
     },
     scene: [
-      Game,
       Title,
+      Game,
     ]
   })
 }
