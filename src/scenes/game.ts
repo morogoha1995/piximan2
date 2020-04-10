@@ -7,6 +7,8 @@ export default class Game extends Phaser.Scene {
   stageMap!: StageMap
   bg!: Background
 
+  currentStage = 0
+
   constructor() {
     super({ key: "game" })
   }
@@ -19,6 +21,13 @@ export default class Game extends Phaser.Scene {
     this.physics.add.collider(this.character, this.stageMap.layer)
 
     this.bg.switchImg(0)
+
+    this.setCameras()
+  }
+
+  private setCameras() {
+    this.cameras.main.startFollow(this.character)
+    this.cameras.main.setBounds(0, 0, this.stageMap.map.widthInPixels, this.stageMap.map.heightInPixels)
   }
 
   update() {

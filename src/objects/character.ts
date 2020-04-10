@@ -8,7 +8,7 @@ interface Keys {
 
 class Character extends Phaser.GameObjects.Sprite {
   body!: Phaser.Physics.Arcade.Body
-  size = 32
+  size = 26
   speed = 200
   jumpPower = 320
   isJumping = false
@@ -37,8 +37,6 @@ class Character extends Phaser.GameObjects.Sprite {
     this.move()
     this.animate()
   }
-
-
 
   isOffside(): boolean {
     return HEIGHT < this.y

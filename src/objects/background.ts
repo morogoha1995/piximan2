@@ -5,7 +5,9 @@ class Background {
     const imgNames = ["bg", "bg1", "bg2"]
 
     for (const imgName of imgNames) {
-      const addedImg = scene.add.image(0, 0, imgName).setOrigin(0)
+      const addedImg = scene.add.image(0, 0, imgName)
+        .setOrigin(0)
+        .setScrollFactor(0)
       addedImg.visible = false
       this.imgs.push(addedImg)
     }
