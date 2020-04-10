@@ -1,4 +1,4 @@
-import { HEIGHT, WIDTH } from "../constants"
+import { HEIGHT } from "../constants"
 
 interface Keys {
   up: Phaser.Input.Keyboard.Key
@@ -9,10 +9,11 @@ interface Keys {
 class Character extends Phaser.GameObjects.Sprite {
   body!: Phaser.Physics.Arcade.Body
   size = 32
-  speed = 800
-  jumpPower = 400
+  speed = 200
+  jumpPower = 320
   isJumping = false
   isAlive = true
+  currentFrame = 0
 
   keys: Keys
 
@@ -23,7 +24,7 @@ class Character extends Phaser.GameObjects.Sprite {
     scene.add.existing(this)
 
     this.setDisplaySize(this.size, this.size)
-    this.body.setMaxVelocity(200, 800)
+    this.body.maxVelocity.y = 800
 
     this.keys = {
       up: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP),
@@ -45,26 +46,20 @@ class Character extends Phaser.GameObjects.Sprite {
 
   private animate() {
     if (this.isJumping) {
-      if (this.body.velocity.x > 0) {
-        this.setFrame(1)
-      } else if (this.body.velocity.x < 0) {
-        this.setFrame(0)
+      if (this.body.velocity.x > 0 || this.currentFrame === 3) {
+        this.currentFrame = 1
+      } else if (this.body.velocity.x < 0 || this.currentFrame === 2) {
+        this.currentFrame = 0
       }
     } else {
-      if (this.body.velocity.x > 0) {
-        this.setFrame(3)
-      } else if (this.body.velocity.x < 0) {
-        this.setFrame(2)
+      if (this.body.velocity.x > 0 || this.currentFrame === 1) {
+        this.currentFrame = 3
+      } else if (this.body.velocity.x < 0 || this.currentFrame === 0) {
+        this.currentFrame = 2
       }
     }
 
-    if (this.body.velocity.x < 0) {
-      if (this.isJumping) {
-        this.setFrame(0)
-      } else {
-        this.setFrame(2)
-      }
-    }
+    this.setFrame(this.currentFrame)
   }
 
   private move() {
@@ -76,12 +71,11 @@ class Character extends Phaser.GameObjects.Sprite {
     this.isJumping = !this.body.onFloor() && !this.body.touching.down && !this.body.blocked.down
 
     if (this.keys.left.isDown) {
-      this.body.setAccelerationX(-this.speed)
+      this.body.setVelocityX(-this.speed)
     } else if (this.keys.right.isDown) {
-      this.body.setAccelerationX(this.speed)
+      this.body.setVelocityX(+this.speed)
     } else {
       this.body.setVelocityX(0)
-      this.body.setAccelerationX(0)
     }
 
     if (this.keys.up.isDown && !this.isJumping) {
