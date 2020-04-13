@@ -6,7 +6,7 @@ interface Keys {
   left: Phaser.Input.Keyboard.Key
 }
 
-class Character extends Phaser.GameObjects.Sprite {
+class Character extends Phaser.Physics.Arcade.Sprite {
   body!: Phaser.Physics.Arcade.Body
   size = 26
   speed = 200
@@ -22,7 +22,7 @@ class Character extends Phaser.GameObjects.Sprite {
 
     scene.physics.world.enable(this)
     scene.add.existing(this)
-
+    this.setCollideWorldBounds(true)
     this.setDisplaySize(this.size, this.size)
     this.body.maxVelocity.y = 800
 
@@ -39,7 +39,7 @@ class Character extends Phaser.GameObjects.Sprite {
   }
 
   isOffside(): boolean {
-    return HEIGHT < this.y
+    return this.y + this.size >= this.scene.physics.world.bounds.height
   }
 
   private animate() {
@@ -62,7 +62,7 @@ class Character extends Phaser.GameObjects.Sprite {
 
   private move() {
     // 落ちたら位置が初期化されるように。開発中のみ。
-    if (this.y > HEIGHT) {
+    if (this.isOffside()) {
       this.setPosition(20, 0)
     }
 

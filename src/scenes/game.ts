@@ -18,7 +18,12 @@ export default class Game extends Phaser.Scene {
     this.character = new Character(this)
     this.stageMap = new StageMap(this)
 
-    this.physics.add.collider(this.character, this.stageMap.layer)
+    this.physics.add.collider(this.character, this.stageMap.layer, (character: any, tile: any) => {
+      if (tile.index === 0) {
+        console.log("banana")
+        this.stageMap.layer.removeTileAt(tile.x, tile.y)
+      }
+    })
 
     this.bg.switchImg(0)
 

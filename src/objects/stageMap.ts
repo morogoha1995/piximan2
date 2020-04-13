@@ -1,4 +1,4 @@
-class StageMap extends Phaser.Physics.Arcade.Group {
+class StageMap {
   private mapInfos = [
     [
       [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,],
@@ -15,14 +15,20 @@ class StageMap extends Phaser.Physics.Arcade.Group {
   ]
   map!: Phaser.Tilemaps.Tilemap
   private tiles!: Phaser.Tilemaps.Tileset
-  layer!: Phaser.Tilemaps.StaticTilemapLayer
+  layer!: Phaser.Tilemaps.DynamicTilemapLayer
 
   constructor(scene: Phaser.Scene) {
-    super(scene.physics.world, scene)
+    this.setMap(scene, 0)
+  }
 
-    this.map = scene.make.tilemap({ data: this.mapInfos[0], tileWidth: 32, tileHeight: 32 })
+  setMap(scene: Phaser.Scene, stage: number) {
+    this.map = scene.make.tilemap({ data: this.mapInfos[stage], tileWidth: 32, tileHeight: 32 })
     this.tiles = this.map.addTilesetImage("tileMaps")
-    this.layer = this.map.createStaticLayer(0, this.tiles, 0, 0).setCollision([1])
+    this.layer = this.map.createDynamicLayer(0, this.tiles, 0, 0)
+    this.layer.setCollision([1, 0])
+
+    scene.physics.world.bounds.width = this.layer.width
+    scene.physics.world.bounds.height = this.layer.height
   }
 }
 
