@@ -28,19 +28,30 @@ class StageMap {
       [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,],
       [4, 4, 4, 4, 1, 1, 1, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4, 4, 4, 4,],
       [4, 4, 4, 4, 4, 0, 1, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,],
-      [4, 4, 4, 4, 4, 4, 4, 4, 1, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,],
-      [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 1, 4, 4, 4, 4, 4, 4, 4, 4, 4,],
-      [4, 4, 4, 4, 1, 4, 4, 4, 4, 4, 4, 4, 1, 4, 4, 4, 4, 4, 4, 4,],
+      [4, 4, 4, 4, 4, 4, 4, 4, 1, 4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4,],
+      [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 1, 4, 4, 4, 4, 0, 4, 4, 4, 4,],
+      [4, 4, 4, 4, 1, 4, 4, 4, 4, 4, 4, 4, 1, 4, 4, 0, 4, 4, 4, 4,],
       [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 1, 1, 1, 4, 4, 4, 4, 4, 4, 4,],
       [4, 4, 1, 1, 1, 1, 1, 4, 1, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,],
       [4, 4, 4, 0, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 6, 4,],
       [1, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 1, 1,],
     ]
   ]
+  maxBananaCount = 0
   layer!: Phaser.Tilemaps.DynamicTilemapLayer
 
   constructor(scene: Phaser.Scene, stage: number) {
-    const map = scene.make.tilemap({ data: this.mapInfos[stage], tileWidth: 32, tileHeight: 32 })
+    const mapInfo = this.mapInfos[stage]
+
+    mapInfo.forEach(row => {
+      row.forEach(col => {
+        if (col === 0) {
+          this.maxBananaCount++
+        }
+      })
+    })
+
+    const map = scene.make.tilemap({ data: mapInfo, tileWidth: 32, tileHeight: 32 })
     const tiles = map.addTilesetImage("tileMaps")
     this.layer = map.createDynamicLayer(0, tiles, 0, 0)
     this.layer.setCollision([0, 1, 2])
