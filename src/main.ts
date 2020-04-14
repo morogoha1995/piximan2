@@ -2,6 +2,7 @@ import Phaser from "phaser"
 import Game from "./scenes/game"
 import { WIDTH, HEIGHT } from "./constants"
 import { Title } from "./scenes/title"
+import { End } from "./scenes/end"
 
 window.onload = () => {
   const main = new Phaser.Game({
@@ -20,6 +21,7 @@ window.onload = () => {
     scene: [
       Title,
       Game,
+      End,
     ]
   })
 }

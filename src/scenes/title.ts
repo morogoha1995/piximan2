@@ -16,7 +16,7 @@ class Title extends Phaser.Scene {
   create() {
 
     const text = new Phaser.GameObjects.Text(this, WIDTH / 2, HEIGHT / 2, "START", {
-      color: "#FFFFFF",
+      color: "red",
       fontSize: "48px"
     })
     text.setInteractive()

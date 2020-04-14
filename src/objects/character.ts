@@ -1,5 +1,3 @@
-import { HEIGHT } from "../constants"
-
 interface Keys {
   up: Phaser.Input.Keyboard.Key
   right: Phaser.Input.Keyboard.Key
@@ -60,10 +58,14 @@ class Character extends Phaser.Physics.Arcade.Sprite {
     this.setFrame(this.currentFrame)
   }
 
+  initPosition() {
+    this.setPosition(20, 0)
+  }
+
   private move() {
     // 落ちたら位置が初期化されるように。開発中のみ。
     if (this.isOffside()) {
-      this.setPosition(20, 0)
+      this.initPosition()
     }
 
     this.isJumping = !this.body.onFloor() && !this.body.touching.down && !this.body.blocked.down

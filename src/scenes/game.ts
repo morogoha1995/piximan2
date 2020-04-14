@@ -8,31 +8,46 @@ export default class Game extends Phaser.Scene {
   bg!: Background
 
   currentStage = 0
+  bananaCount = 0
 
   constructor() {
     super({ key: "game" })
   }
 
-  create() {
-    this.bg = new Background(this)
-    this.character = new Character(this)
-    this.stageMap = new StageMap(this)
-
-    this.physics.add.collider(this.character, this.stageMap.layer, (character: any, tile: any) => {
-      if (tile.index === 0) {
-        console.log("banana")
-        this.stageMap.layer.removeTileAt(tile.x, tile.y)
-      }
-    })
-
-    this.bg.switchImg(0)
-
-    this.setCameras()
+  init(obj: any) {
+    if (obj.stage)
+      this.currentStage = obj.stage
   }
 
-  private setCameras() {
+  create() {
+    this.bg = new Background(this, this.currentStage)
+    this.character = new Character(this)
+    this.stageMap = new StageMap(this, this.currentStage)
+
+    this.physics.add.collider(this.character, this.stageMap.layer, (_, tile: any) => {
+      if (tile.index === 0) {
+        this.bananaCount++
+        this.stageMap.layer.removeTileAt(tile.x, tile.y)
+
+        if (this.bananaCount === 3) {
+          // To visible star.
+          this.stageMap.layer.swapByIndex(6, 2).setCollision(2)
+        }
+      } else if (tile.index === 2)
+        this.nextStage()
+    })
+
     this.cameras.main.startFollow(this.character)
-    this.cameras.main.setBounds(0, 0, this.stageMap.map.widthInPixels, this.stageMap.map.heightInPixels)
+  }
+
+  private nextStage() {
+    if (this.currentStage === 2) {
+      this.scene.start("end")
+      return
+    }
+
+    this.scene.restart({ stage: this.currentStage + 1 })
+    this.bananaCount = 0
   }
 
   update() {
