@@ -11,6 +11,8 @@ class Title extends Phaser.Scene {
       .image("bg1", "imgs/bg1.jpg")
       .image("bg2", "imgs/bg2.jpg")
       .image("x", "imgs/x.png")
+      .image("duck", "imgs/duck.png")
+      .image("uncle", "imgs/uncle.png")
       .image("number_0", "imgs/number_0.png")
       .image("number_1", "imgs/number_1.png")
       .image("number_2", "imgs/number_2.png")

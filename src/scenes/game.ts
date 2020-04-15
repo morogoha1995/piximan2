@@ -2,9 +2,12 @@ import { Character } from "../objects/character"
 import { StageMap } from "../objects/stageMap"
 import { Background } from "../objects/background"
 import { Score } from "../objects/score"
+import { Enemy } from "../objects/enemy"
+import enemyInfo from "../assets/enemy.json"
 
 export default class Game extends Phaser.Scene {
   character!: Character
+  enemies!: Phaser.GameObjects.Group
   stageMap!: StageMap
   bg!: Background
   score!: Score
@@ -28,25 +31,47 @@ export default class Game extends Phaser.Scene {
   create() {
     this.bg = new Background(this, this.currentStage)
     this.character = new Character(this)
+    this.enemies = this.add.group({ runChildUpdate: true })
     this.stageMap = new StageMap(this, this.currentStage)
-    this.score = new Score(this, this.currentStage, this.stageMap.maxBananaCount)
+    this.score = new Score(this, this.currentStage, this.stageMap.maxStage, this.stageMap.maxBananaCount)
 
-    this.physics.add.collider(this.character, this.stageMap.layer, (_, tile: any) => {
-      if (tile.index === 0) {
-        this.bananaCount++
-        this.score.setBananaCount(this.bananaCount)
-        this.stageMap.layer.removeTileAt(tile.x, tile.y)
+    this.makeEnemies()
 
-        if (this.bananaCount === this.stageMap.maxBananaCount) {
-          // To visible star.
-          this.stageMap.layer.swapByIndex(6, 2).setCollision(2)
-          this.score.eraseXMark()
-        }
-      } else if (tile.index === 2)
-        this.nextStage()
-    })
+    this.physics.add.collider(this.character, this.stageMap.layer, this.collideTile, undefined, this)
+    this.physics.add.collider(this.enemies, this.stageMap.layer)
+    this.physics.add.collider(this.character, this.enemies, this.collideEnemy, undefined, this)
 
     this.cameras.main.startFollow(this.character)
+  }
+
+  private makeEnemies() {
+    const enemies = enemyInfo[this.currentStage]
+    enemies.forEach((enemy: any) => {
+      this.enemies.add(new Enemy(this, enemy.x, enemy.y, enemy.key))
+    })
+  }
+
+  private collideEnemy(character: any, enemy: any) {
+    if (character.body.touching.down && enemy.body.touching.up) {
+      character.bounce()
+      enemy.die()
+    } else {
+      character.die()
+    }
+  }
+
+  private collideTile(_: any, tile: any) {
+    if (tile.index === 0) {
+      this.bananaCount++
+      this.score.setBananaCount(this.bananaCount)
+      this.stageMap.layer.removeTileAt(tile.x, tile.y)
+
+      if (this.bananaCount === this.stageMap.maxBananaCount) {
+        // To visible star.
+        this.stageMap.layer.swapByIndex(6, 2).setCollision(2)
+      }
+    } else if (tile.index === 2)
+      this.nextStage()
   }
 
   private nextStage() {

@@ -4,7 +4,7 @@ interface Keys {
   left: Phaser.Input.Keyboard.Key
 }
 
-class Character extends Phaser.Physics.Arcade.Sprite {
+class Character extends Phaser.GameObjects.Sprite {
   body!: Phaser.Physics.Arcade.Body
   size = 26
   speed = 200
@@ -20,7 +20,7 @@ class Character extends Phaser.Physics.Arcade.Sprite {
 
     scene.physics.world.enable(this)
     scene.add.existing(this)
-    this.setCollideWorldBounds(true)
+    this.body.setCollideWorldBounds(true)
     this.setDisplaySize(this.size, this.size)
     this.body.maxVelocity.y = 800
 
@@ -83,9 +83,23 @@ class Character extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
+  bounce() {
+    this.scene.add.tween({
+      targets: this,
+      props: { y: this.y - 5 },
+      duration: 200,
+      ease: "Power1",
+      yoyo: true
+    })
+  }
+
   jump() {
     this.body.setVelocityY(-this.jumpPower)
     this.isJumping = true
+  }
+
+  die() {
+    this.initPosition()
   }
 }
 
