@@ -1,5 +1,3 @@
-import { HEIGHT } from "../constants"
-
 class Enemy extends Phaser.GameObjects.Sprite {
   body!: Phaser.Physics.Arcade.Body
   private speed = 60
@@ -17,7 +15,7 @@ class Enemy extends Phaser.GameObjects.Sprite {
   }
 
   update() {
-    if (this.y + this.displayHeight >= this.scene.physics.world.bounds.height)
+    if (this.body.bottom >= this.scene.physics.world.bounds.height)
       this.die()
 
     if (!this.isDying)

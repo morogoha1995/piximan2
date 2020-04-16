@@ -11,6 +11,7 @@ class Title extends Phaser.Scene {
       .image("bg1", "imgs/bg1.jpg")
       .image("bg2", "imgs/bg2.jpg")
       .image("x", "imgs/x.png")
+      .image("heart", "imgs/heart.png")
       .image("duck", "imgs/duck.png")
       .image("uncle", "imgs/uncle.png")
       .image("number_0", "imgs/number_0.png")
@@ -25,6 +26,12 @@ class Title extends Phaser.Scene {
       .image("number_9", "imgs/number_9.png")
       .spritesheet("character", "imgs/character.png", { frameWidth: 32, frameHeight: 32 })
       .spritesheet("tileMaps", "imgs/tile-maps.png", { frameWidth: 32, frameHeight: 32 })
+      .audio("hurt", "audio/hurt.mp3")
+      .audio("die", "audio/die.mp3")
+      .audio("jump", "audio/jump.mp3")
+      .audio("bounce", "audio/bounce.mp3")
+      .audio("getBanana", "audio/get-banana.mp3")
+      .audio("getStar", "audio/get-star.mp3")
   }
 
   create() {
@@ -35,7 +42,7 @@ class Title extends Phaser.Scene {
     })
     text.setInteractive()
     text.on("pointerdown", () => {
-      this.scene.start("game", { stage: 0 })
+      this.scene.start("game", { stage: 0, life: 0 })
     })
 
     this.add.existing(text)

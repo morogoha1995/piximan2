@@ -12,11 +12,15 @@ class Character extends Phaser.GameObjects.Sprite {
   isJumping = false
   isAlive = true
   currentFrame = 0
+  maxLife = 3
+  life: number
 
   keys: Keys
 
-  constructor(scene: Phaser.Scene) {
+  constructor(scene: Phaser.Scene, life: number) {
     super(scene, 45, 90, "character", 0)
+
+    this.life = life
 
     scene.physics.world.enable(this)
     scene.add.existing(this)
@@ -32,12 +36,11 @@ class Character extends Phaser.GameObjects.Sprite {
   }
 
   update() {
+    if (this.isDead())
+      return
+
     this.move()
     this.animate()
-  }
-
-  isOffside(): boolean {
-    return this.y + this.size >= this.scene.physics.world.bounds.height
   }
 
   private animate() {
@@ -58,48 +61,76 @@ class Character extends Phaser.GameObjects.Sprite {
     this.setFrame(this.currentFrame)
   }
 
-  initPosition() {
-    this.setPosition(20, 0)
-  }
-
   private move() {
-    // 落ちたら位置が初期化されるように。開発中のみ。
-    if (this.isOffside()) {
-      this.initPosition()
-    }
-
     this.isJumping = !this.body.onFloor() && !this.body.touching.down && !this.body.blocked.down
 
-    if (this.keys.left.isDown) {
+    if (this.keys.left.isDown)
       this.body.setVelocityX(-this.speed)
-    } else if (this.keys.right.isDown) {
+    else if (this.keys.right.isDown)
       this.body.setVelocityX(+this.speed)
-    } else {
+    else
       this.body.setVelocityX(0)
-    }
 
-    if (this.keys.up.isDown && !this.isJumping) {
+    if (this.keys.up.isDown && !this.isJumping)
       this.jump()
-    }
+  }
+
+  isDead() {
+    return this.life === 0
   }
 
   bounce() {
+    this.scene.sound.play("bounce")
     this.scene.add.tween({
       targets: this,
-      props: { y: this.y - 5 },
-      duration: 200,
+      props: { y: this.y - 10 },
+      duration: 100,
       ease: "Power1",
-      yoyo: true
     })
   }
 
   jump() {
+    this.scene.sound.play("jump")
     this.body.setVelocityY(-this.jumpPower)
     this.isJumping = true
   }
 
-  die() {
-    this.initPosition()
+  damaged() {
+    this.life--
+
+    if (this.isDead())
+      this.die()
+    else
+      this.hurt()
+  }
+
+  private hurt() {
+    this.scene.sound.play("hurt")
+
+    this.body.checkCollision.none = true
+
+    this.scene.add.tween({
+      targets: this,
+      alpha: 0,
+      duration: 100,
+      repeat: 3,
+      yoyo: true,
+      onComplete: () => this.body.checkCollision.none = false
+    })
+  }
+
+  private die() {
+    this.scene.sound.play("die")
+
+    this.scene.physics.pause()
+
+    this.scene.add.tween({
+      targets: this,
+      alpha: 0,
+      duration: 1000,
+      yoyo: false,
+      onComplete: () => this.scene.scene.start("title")
+    })
   }
 }
 

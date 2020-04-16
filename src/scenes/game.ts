@@ -4,6 +4,7 @@ import { Background } from "../objects/background"
 import { Score } from "../objects/score"
 import { Enemy } from "../objects/enemy"
 import enemyInfo from "../assets/enemy.json"
+import { HEIGHT, WIDTH } from "../constants"
 
 export default class Game extends Phaser.Scene {
   character!: Character
@@ -13,7 +14,9 @@ export default class Game extends Phaser.Scene {
   score!: Score
 
   currentStage = 0
+  life = 0
   bananaCount = 0
+  inTransition = false
 
   constructor() {
     super({ key: "game" })
@@ -26,14 +29,20 @@ export default class Game extends Phaser.Scene {
       this.currentStage = data.stage
     else
       this.currentStage = 0
+
+    if (data.life)
+      this.life = data.life
+    else
+      this.life = 3
   }
 
   create() {
     this.bg = new Background(this, this.currentStage)
-    this.character = new Character(this)
+    this.character = new Character(this, this.life)
     this.enemies = this.add.group({ runChildUpdate: true })
     this.stageMap = new StageMap(this, this.currentStage)
-    this.score = new Score(this, this.currentStage, this.stageMap.maxStage, this.stageMap.maxBananaCount)
+    console.log(this.character.life)
+    this.score = new Score(this, this.currentStage, this.stageMap.maxStage, this.stageMap.maxBananaCount, this.character.maxLife, this.character.life)
 
     this.makeEnemies()
 
@@ -56,12 +65,14 @@ export default class Game extends Phaser.Scene {
       character.bounce()
       enemy.die()
     } else {
-      character.die()
+      character.damaged()
+      this.score.setLife(this.character.life)
     }
   }
 
   private collideTile(_: any, tile: any) {
     if (tile.index === 0) {
+      this.sound.play("getBanana")
       this.bananaCount++
       this.score.setBananaCount(this.bananaCount)
       this.stageMap.layer.removeTileAt(tile.x, tile.y)
@@ -71,17 +82,39 @@ export default class Game extends Phaser.Scene {
         this.stageMap.layer.swapByIndex(6, 2).setCollision(2)
       }
     } else if (tile.index === 2)
-      this.nextStage()
+      this.getStar()
+  }
+
+  private getStar() {
+    this.inTransition = true
+    this.physics.pause()
+    this.sound.play("getStar")
+    this.tweens.add({
+      targets: this.character,
+      scale: 5,
+      y: HEIGHT / 2,
+      duration: 1000,
+      yoyo: false,
+      onComplete: () => this.nextStage()
+    })
   }
 
   private nextStage() {
+    this.inTransition = false
+
     if (this.currentStage === 2)
       this.scene.start("title")
     else
-      this.scene.restart({ stage: this.currentStage + 1 })
+      this.scene.restart({
+        stage: this.currentStage + 1,
+        life: this.character.life
+      })
   }
 
   update() {
+    if (this.inTransition || this.character.isDead())
+      return
+
     this.character.update()
   }
 }

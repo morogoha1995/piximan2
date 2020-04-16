@@ -9,7 +9,7 @@ window.onload = () => {
     type: Phaser.AUTO,
     width: WIDTH,
     height: HEIGHT,
-    zoom: 2,
+    //zoom: 2,
     parent: 'app',
     physics: {
       default: 'arcade',
