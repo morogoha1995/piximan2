@@ -6,16 +6,15 @@ interface Keys {
 
 class Character extends Phaser.GameObjects.Sprite {
   body!: Phaser.Physics.Arcade.Body
-  size = 26
-  speed = 200
-  jumpPower = 320
-  isJumping = false
-  isAlive = true
-  currentFrame = 0
+  private size = 26
+  private speed = 200
+  private jumpPower = 320
+  private isJumping = false
+  private currentFrame = 0
   maxLife = 3
   life: number
 
-  keys: Keys
+  private keys: Keys
 
   constructor(scene: Phaser.Scene, life: number) {
     super(scene, 45, 90, "character", 0)
@@ -129,7 +128,7 @@ class Character extends Phaser.GameObjects.Sprite {
       alpha: 0,
       duration: 1000,
       yoyo: false,
-      onComplete: () => this.scene.scene.start("title")
+      onComplete: () => this.scene.scene.start("gameover")
     })
   }
 }

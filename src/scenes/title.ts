@@ -1,12 +1,15 @@
-import { WIDTH, HEIGHT } from "../constants"
+import { Base } from "./base"
 
-class Title extends Phaser.Scene {
+class Title extends Base {
   constructor() {
-    super({ key: "title" })
+    super("title", "始める")
   }
 
   preload() {
     this.load
+      .image("title", "imgs/title.png")
+      .image("clear", "imgs/clear.png")
+      .image("gameover", "imgs/gameover.png")
       .image("bg", "imgs/bg.jpg")
       .image("bg1", "imgs/bg1.jpg")
       .image("bg2", "imgs/bg2.jpg")
@@ -35,17 +38,7 @@ class Title extends Phaser.Scene {
   }
 
   create() {
-
-    const text = new Phaser.GameObjects.Text(this, WIDTH / 2, HEIGHT / 2, "START", {
-      color: "red",
-      fontSize: "48px"
-    })
-    text.setInteractive()
-    text.on("pointerdown", () => {
-      this.scene.start("game", { stage: 0, life: 0 })
-    })
-
-    this.add.existing(text)
+    this.makeBtns()
   }
 }
 

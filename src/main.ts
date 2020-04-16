@@ -2,14 +2,14 @@ import Phaser from "phaser"
 import Game from "./scenes/game"
 import { WIDTH, HEIGHT } from "./constants"
 import { Title } from "./scenes/title"
-import { End } from "./scenes/end"
+import { Clear } from "./scenes/clear"
+import { Gameover } from "./scenes/gameover"
 
 window.onload = () => {
   const main = new Phaser.Game({
     type: Phaser.AUTO,
     width: WIDTH,
     height: HEIGHT,
-    //zoom: 2,
     parent: 'app',
     physics: {
       default: 'arcade',
@@ -21,7 +21,8 @@ window.onload = () => {
     scene: [
       Title,
       Game,
-      End,
+      Clear,
+      Gameover,
     ]
   })
 }

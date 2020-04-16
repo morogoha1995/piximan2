@@ -4,19 +4,18 @@ import { Background } from "../objects/background"
 import { Score } from "../objects/score"
 import { Enemy } from "../objects/enemy"
 import enemyInfo from "../assets/enemy.json"
-import { HEIGHT, WIDTH } from "../constants"
+import { HEIGHT } from "../constants"
 
 export default class Game extends Phaser.Scene {
-  character!: Character
-  enemies!: Phaser.GameObjects.Group
-  stageMap!: StageMap
-  bg!: Background
-  score!: Score
+  private character!: Character
+  private enemies!: Phaser.GameObjects.Group
+  private stageMap!: StageMap
+  private score!: Score
 
-  currentStage = 0
-  life = 0
-  bananaCount = 0
-  inTransition = false
+  private currentStage = 0
+  private life = 0
+  private bananaCount = 0
+  private inTransition = false
 
   constructor() {
     super({ key: "game" })
@@ -37,7 +36,7 @@ export default class Game extends Phaser.Scene {
   }
 
   create() {
-    this.bg = new Background(this, this.currentStage)
+    new Background(this, this.currentStage)
     this.character = new Character(this, this.life)
     this.enemies = this.add.group({ runChildUpdate: true })
     this.stageMap = new StageMap(this, this.currentStage)
@@ -89,7 +88,7 @@ export default class Game extends Phaser.Scene {
     this.inTransition = true
     this.physics.pause()
     this.sound.play("getStar")
-    this.tweens.add({
+    this.add.tween({
       targets: this.character,
       scale: 5,
       y: HEIGHT / 2,
@@ -103,7 +102,7 @@ export default class Game extends Phaser.Scene {
     this.inTransition = false
 
     if (this.currentStage === 2)
-      this.scene.start("title")
+      this.scene.start("clear")
     else
       this.scene.restart({
         stage: this.currentStage + 1,
