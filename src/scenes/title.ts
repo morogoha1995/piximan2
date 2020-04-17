@@ -1,4 +1,5 @@
 import { Base } from "./base"
+import { WIDTH } from "../constants"
 
 class Title extends Base {
   constructor() {
@@ -10,6 +11,7 @@ class Title extends Base {
       .image("title", "imgs/title.png")
       .image("clear", "imgs/clear.png")
       .image("gameover", "imgs/gameover.png")
+      .image("stageClear", "imgs/stageclear.png")
       .image("bg", "imgs/bg.jpg")
       .image("bg1", "imgs/bg1.jpg")
       .image("bg2", "imgs/bg2.jpg")
@@ -29,6 +31,9 @@ class Title extends Base {
       .image("number_9", "imgs/number_9.png")
       .spritesheet("character", "imgs/character.png", { frameWidth: 32, frameHeight: 32 })
       .spritesheet("tileMaps", "imgs/tile-maps.png", { frameWidth: 32, frameHeight: 32 })
+      .spritesheet("touchPanel", "imgs/touch-panel.png", {
+        frameWidth: 60, frameHeight: 60
+      })
       .audio("hurt", "audio/hurt.mp3")
       .audio("die", "audio/die.mp3")
       .audio("jump", "audio/jump.mp3")
@@ -39,6 +44,14 @@ class Title extends Base {
 
   create() {
     this.makeBtns()
+
+    this.add.text(WIDTH / 2, 50, "ピクシーマン2", {
+      color: "skyblue",
+      stroke: "teal",
+      fontSize: "40px",
+      fontStyle: "bold",
+      strokeThickness: 12
+    }).setOrigin(0.5)
   }
 }
 

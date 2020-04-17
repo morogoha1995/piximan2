@@ -50,6 +50,8 @@ class Base extends Phaser.Scene {
   private switchMute() {
     this.isMute = !this.isMute
     this.crossMark.setVisible(this.isMute)
+    if (!this.isMute)
+      this.sound.play("jump")
   }
 }
 

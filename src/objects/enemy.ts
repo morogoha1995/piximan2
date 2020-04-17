@@ -36,9 +36,8 @@ class Enemy extends Phaser.GameObjects.Sprite {
 
     this.scene.add.tween({
       targets: this,
-      props: { alpha: 0 },
-      duration: 1000,
-      ease: "Power0",
+      alpha: 0,
+      duration: 600,
       yoyo: false,
       onComplete: () => this.dead()
     })

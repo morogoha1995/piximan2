@@ -3,8 +3,8 @@ import { StageMap } from "../objects/stageMap"
 import { Background } from "../objects/background"
 import { Score } from "../objects/score"
 import { Enemy } from "../objects/enemy"
+import { TouchPanel } from "../objects/touchPanel"
 import enemyInfo from "../assets/enemy.json"
-import { HEIGHT } from "../constants"
 
 export default class Game extends Phaser.Scene {
   private character!: Character
@@ -15,13 +15,14 @@ export default class Game extends Phaser.Scene {
   private currentStage = 0
   private life = 0
   private bananaCount = 0
-  private inTransition = false
+  private inStageTransition = false
 
   constructor() {
     super({ key: "game" })
   }
 
   init(data: any) {
+    this.inStageTransition = false
     this.bananaCount = 0
 
     if (data.stage)
@@ -40,8 +41,61 @@ export default class Game extends Phaser.Scene {
     this.character = new Character(this, this.life)
     this.enemies = this.add.group({ runChildUpdate: true })
     this.stageMap = new StageMap(this, this.currentStage)
-    console.log(this.character.life)
     this.score = new Score(this, this.currentStage, this.stageMap.maxStage, this.stageMap.maxBananaCount, this.character.maxLife, this.character.life)
+    const touchPanel = new TouchPanel(this)
+
+    touchPanel.left.on("pointerdown", () => {
+      this.downKey("left")
+    })
+    touchPanel.right.on("pointerdown", () => {
+      this.downKey("right")
+    })
+    touchPanel.up.on("pointerdown", () => {
+      this.downKey("up")
+    })
+    touchPanel.left.on("pointerup", () => {
+      this.upKey("left")
+    })
+    touchPanel.right.on("pointerup", () => {
+      this.upKey("right")
+    })
+    touchPanel.up.on("pointerup", () => {
+      this.upKey("up")
+    })
+    touchPanel.left.on("pointerout", () => {
+      this.upKey("left")
+    })
+    touchPanel.right.on("pointerout", () => {
+      this.upKey("right")
+    })
+    touchPanel.up.on("pointerout", () => {
+      this.upKey("up")
+    })
+
+    this.input.keyboard.on("keydown", (e: any) => {
+      e.preventDefault()
+
+      if (e.key === "ArrowLeft")
+        this.downKey("left")
+
+      if (e.key === "ArrowRight")
+        this.downKey("right")
+
+      if (e.key === "ArrowUp")
+        this.downKey("up")
+    })
+    this.input.keyboard.on("keyup", (e: any) => {
+      e.preventDefault()
+
+      if (e.key === "ArrowLeft")
+        this.upKey("left")
+
+      if (e.key === "ArrowRight")
+        this.upKey("right")
+
+      if (e.key === "ArrowUp")
+        this.upKey("up")
+    })
 
     this.makeEnemies()
 
@@ -59,6 +113,14 @@ export default class Game extends Phaser.Scene {
     })
   }
 
+  private downKey(key: string) {
+    this.character.downKey(key)
+  }
+
+  private upKey(key: string) {
+    this.character.upKey(key)
+  }
+
   private collideEnemy(character: any, enemy: any) {
     if (character.body.touching.down && enemy.body.touching.up) {
       character.bounce()
@@ -72,37 +134,38 @@ export default class Game extends Phaser.Scene {
   private collideTile(_: any, tile: any) {
     if (tile.index === 0) {
       this.sound.play("getBanana")
+
       this.bananaCount++
       this.score.setBananaCount(this.bananaCount)
-      this.stageMap.layer.removeTileAt(tile.x, tile.y)
-
       if (this.bananaCount === this.stageMap.maxBananaCount) {
         // To visible star.
         this.stageMap.layer.swapByIndex(6, 2).setCollision(2)
       }
+
+      this.stageMap.layer.removeTileAt(tile.x, tile.y)
     } else if (tile.index === 2)
       this.getStar()
   }
 
   private getStar() {
-    this.inTransition = true
+    this.inStageTransition = true
+    const curtain = this.add.image(0, 0, "stageClear").setAlpha(0).setScrollFactor(0).setOrigin(0)
     this.physics.pause()
     this.sound.play("getStar")
     this.add.tween({
-      targets: this.character,
-      scale: 5,
-      y: HEIGHT / 2,
-      duration: 1000,
-      yoyo: false,
+      targets: curtain,
+      alpha: 1,
+      duration: 600,
+      yoyo: true,
       onComplete: () => this.nextStage()
     })
   }
 
   private nextStage() {
-    this.inTransition = false
-
-    if (this.currentStage === 2)
-      this.scene.start("clear")
+    if (this.currentStage === 0)
+      this.scene.start("clear", {
+        life: this.character.life
+      })
     else
       this.scene.restart({
         stage: this.currentStage + 1,
@@ -111,7 +174,7 @@ export default class Game extends Phaser.Scene {
   }
 
   update() {
-    if (this.inTransition || this.character.isDead())
+    if (this.inStageTransition || this.character.isDead())
       return
 
     this.character.update()

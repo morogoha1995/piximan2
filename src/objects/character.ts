@@ -1,9 +1,3 @@
-interface Keys {
-  up: Phaser.Input.Keyboard.Key
-  right: Phaser.Input.Keyboard.Key
-  left: Phaser.Input.Keyboard.Key
-}
-
 class Character extends Phaser.GameObjects.Sprite {
   body!: Phaser.Physics.Arcade.Body
   private size = 26
@@ -14,7 +8,11 @@ class Character extends Phaser.GameObjects.Sprite {
   maxLife = 3
   life: number
 
-  private keys: Keys
+  private keys: any = {
+    left: false,
+    right: false,
+    up: false
+  }
 
   constructor(scene: Phaser.Scene, life: number) {
     super(scene, 45, 90, "character", 0)
@@ -26,12 +24,6 @@ class Character extends Phaser.GameObjects.Sprite {
     this.body.setCollideWorldBounds(true)
     this.setDisplaySize(this.size, this.size)
     this.body.maxVelocity.y = 800
-
-    this.keys = {
-      up: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP),
-      right: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT),
-      left: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT),
-    }
   }
 
   update() {
@@ -63,15 +55,23 @@ class Character extends Phaser.GameObjects.Sprite {
   private move() {
     this.isJumping = !this.body.onFloor() && !this.body.touching.down && !this.body.blocked.down
 
-    if (this.keys.left.isDown)
+    if (this.keys.left)
       this.body.setVelocityX(-this.speed)
-    else if (this.keys.right.isDown)
+    else if (this.keys.right)
       this.body.setVelocityX(+this.speed)
     else
       this.body.setVelocityX(0)
 
-    if (this.keys.up.isDown && !this.isJumping)
+    if (this.keys.up && !this.isJumping)
       this.jump()
+  }
+
+  downKey(key: string) {
+    this.keys[key] = true
+  }
+
+  upKey(key: string) {
+    this.keys[key] = false
   }
 
   isDead() {
@@ -82,9 +82,8 @@ class Character extends Phaser.GameObjects.Sprite {
     this.scene.sound.play("bounce")
     this.scene.add.tween({
       targets: this,
-      props: { y: this.y - 10 },
-      duration: 100,
-      ease: "Power1",
+      y: this.y - 10,
+      duration: 100
     })
   }
 
