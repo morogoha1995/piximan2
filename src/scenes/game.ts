@@ -16,6 +16,7 @@ export default class Game extends Phaser.Scene {
   private life = 0
   private bananaCount = 0
   private inStageTransition = false
+  private elapsedTime = 0
 
   constructor() {
     super({ key: "game" })
@@ -25,15 +26,15 @@ export default class Game extends Phaser.Scene {
     this.inStageTransition = false
     this.bananaCount = 0
 
-    if (data.stage)
-      this.currentStage = data.stage
-    else
-      this.currentStage = 0
+    this.currentStage = data.stage || 0
+    this.life = data.life || 5
+    this.elapsedTime = data.elapsedTime || 0
 
-    if (data.life)
-      this.life = data.life
-    else
-      this.life = 3
+    this.time.addEvent({
+      delay: 1000,
+      loop: true,
+      callback: () => { this.elapsedTime++ }
+    })
   }
 
   create() {
@@ -103,7 +104,7 @@ export default class Game extends Phaser.Scene {
     this.physics.add.collider(this.enemies, this.stageMap.layer)
     this.physics.add.collider(this.character, this.enemies, this.collideEnemy, undefined, this)
 
-    this.cameras.main.startFollow(this.character)
+    this.cameras.main.startFollow(this.character, true)
   }
 
   private makeEnemies() {
@@ -162,14 +163,16 @@ export default class Game extends Phaser.Scene {
   }
 
   private nextStage() {
-    if (this.currentStage === 0)
+    if (this.currentStage === 2)
       this.scene.start("clear", {
-        life: this.character.life
+        life: this.character.life,
+        elapsedTime: this.elapsedTime
       })
     else
       this.scene.restart({
         stage: this.currentStage + 1,
-        life: this.character.life
+        life: this.character.life,
+        elapsedTime: this.elapsedTime
       })
   }
 

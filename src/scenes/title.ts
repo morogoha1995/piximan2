@@ -1,5 +1,6 @@
 import { Base } from "./base"
 import { WIDTH } from "../constants"
+import { createFontStyle } from "../utils/text"
 
 class Title extends Base {
   constructor() {
@@ -45,13 +46,12 @@ class Title extends Base {
   create() {
     this.makeBtns()
 
-    this.add.text(WIDTH / 2, 50, "ピクシーマン2", {
-      color: "skyblue",
-      stroke: "teal",
-      fontSize: "40px",
-      fontStyle: "bold",
-      strokeThickness: 12
-    }).setOrigin(0.5)
+    this.add.text(
+      WIDTH / 2,
+      50,
+      "ピクシーマン2",
+      createFontStyle("gold", "teal", 40)
+    ).setOrigin(0.5)
   }
 }
 

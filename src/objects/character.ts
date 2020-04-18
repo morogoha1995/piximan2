@@ -1,11 +1,11 @@
 class Character extends Phaser.GameObjects.Sprite {
   body!: Phaser.Physics.Arcade.Body
   private size = 26
-  private speed = 200
-  private jumpPower = 320
+  private speed = 180
+  private jumpPower = 300
   private isJumping = false
   private currentFrame = 0
-  maxLife = 3
+  maxLife = 5
   life: number
 
   private keys: any = {

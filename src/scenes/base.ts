@@ -25,7 +25,7 @@ class Base extends Phaser.Scene {
     text.setInteractive()
     text.on("pointerdown", () => {
       this.sound.mute = this.isMute
-      this.scene.start("game", { stage: 0, life: 0 })
+      this.scene.start("game", { stage: 0, life: 0, elapsedTime: 0 })
     })
 
     // audioBtn
