@@ -76,33 +76,33 @@ export default class Game extends Phaser.Scene {
     this.input.keyboard.on("keydown", (e: any) => {
       e.preventDefault()
 
-      if (e.key === "ArrowLeft")
+      if (e.key === "ArrowLeft" || e.key === "Left")
         this.downKey("left")
 
-      if (e.key === "ArrowRight")
+      if (e.key === "ArrowRight" || e.key === "Right")
         this.downKey("right")
 
-      if (e.key === "ArrowUp")
+      if (e.key === "ArrowUp" || e.key === "Up")
         this.downKey("up")
     })
     this.input.keyboard.on("keyup", (e: any) => {
       e.preventDefault()
 
-      if (e.key === "ArrowLeft")
+      if (e.key === "ArrowLeft" || e.key === "Left")
         this.upKey("left")
 
-      if (e.key === "ArrowRight")
+      if (e.key === "ArrowRight" || e.key === "Right")
         this.upKey("right")
 
-      if (e.key === "ArrowUp")
+      if (e.key === "ArrowUp" || e.key === "Up")
         this.upKey("up")
     })
 
-    this.makeEnemies()
-
     this.physics.add.collider(this.character, this.stageMap.layer, this.collideTile, undefined, this)
     this.physics.add.collider(this.enemies, this.stageMap.layer)
-    this.physics.add.collider(this.character, this.enemies, this.collideEnemy, undefined, this)
+    this.physics.add.collider(this.character, this.enemies, this.overlapEnemy, undefined, this)
+
+    this.makeEnemies()
 
     this.cameras.main.startFollow(this.character, true)
   }
@@ -122,7 +122,9 @@ export default class Game extends Phaser.Scene {
     this.character.upKey(key)
   }
 
-  private collideEnemy(character: any, enemy: any) {
+  private overlapEnemy(character: any, enemy: any) {
+    console.log("char", character.body.height, character.body.top, character.body.touching)
+    console.log("enemy", enemy.body.height, enemy.body.top, enemy.body.touching)
     if (character.body.touching.down && enemy.body.touching.up) {
       character.bounce()
       enemy.die()

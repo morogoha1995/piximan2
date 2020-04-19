@@ -24,6 +24,7 @@ class Character extends Phaser.GameObjects.Sprite {
     this.body.setCollideWorldBounds(true)
     this.setDisplaySize(this.size, this.size)
     this.body.maxVelocity.y = 800
+    this.body.setImmovable(true)
   }
 
   update() {
@@ -87,7 +88,7 @@ class Character extends Phaser.GameObjects.Sprite {
     })
   }
 
-  jump() {
+  private jump() {
     this.scene.sound.play("jump")
     this.body.setVelocityY(-this.jumpPower)
     this.isJumping = true

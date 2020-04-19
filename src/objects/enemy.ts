@@ -9,9 +9,12 @@ class Enemy extends Phaser.GameObjects.Sprite {
     if (texture === "uncle")
       this.speed = this.speed * 2
 
+
     scene.physics.world.enable(this)
     scene.add.existing(this)
     this.body.setCollideWorldBounds(true)
+    this.body.maxVelocity.y = 800
+    this.body.setImmovable(true)
   }
 
   update() {
